@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      width: 260px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #111;
+      color: #f3f3f3;
+      padding: 16px 14px 14px;
+      text-align: center;
+    }
+    .shield { font-size: 32px; line-height: 1; }
+    .status {
+      margin-top: 8px;
+      font-size: 11px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: #8d8d8d;
+    }
+    .count {
+      font-size: 34px;
+      font-weight: 700;
+      color: #66bb6a;
+      margin: 4px 0 0;
+    }
+    .meta { font-size: 11px; color: #9ccc65; min-height: 16px; margin: 6px 0 12px; }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1c1c1c;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: #2a2a2a;
+      color: #eee;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    button:hover { background: #333; }
+    .hint { margin-top: 10px; font-size: 10px; line-height: 1.4; color: #888; text-align: left; }
+    input[type="checkbox"] { accent-color: #66bb6a; }
+  </style>
+</head>
+<body>
+  <div class="shield">🛡️</div>
+  <div class="status" id="status">DLP local activo</div>
+  <div class="count" id="count">0</div>
+  <div class="label" style="font-size:12px;color:#cfcfcf;">detecciones bloqueadas</div>
+  <div class="meta" id="meta"></div>
+  <label class="row">
+    <span>Protección activa</span>
+    <input id="enabled" type="checkbox" checked />
+  </label>
+  <button id="reset" type="button">Reiniciar contador</button>
+  <div class="hint">
+    Cubre ChatGPT, Claude, Gemini, Grok, Copilot, Perplexity, DeepSeek y otras IAs web.
+    Los datos originales no salen de esta pestaña. Recarga el chat después de instalar.
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
