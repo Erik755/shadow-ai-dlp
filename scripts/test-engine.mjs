@@ -34,6 +34,15 @@ assert("detecta rfc", redacted.types.includes("RFC"));
 assert("detecta api key", redacted.types.includes("APIKEY"));
 assert("no deja el correo en claro", !redacted.text.includes("juan@perez.com"));
 assert("no deja la tarjeta en claro", !redacted.text.includes("4111111111111111"));
+assert("manda correo sintético", /@/.test(redacted.text) && !redacted.text.includes("{{DLP_EMAIL"));
+const fakeMail = Object.keys(vault).find((k) => String(vault[k]) === "juan@perez.com");
+assert("restaura correo en la respuesta", fakeMail && core.restoreText("cuenta " + fakeMail, vault).includes("juan@perez.com"));
+const fakeCard = Object.keys(vault).find((k) => String(vault[k]).includes("4111111111111111"));
+assert(
+  "restaura last4 de tarjeta",
+  fakeCard &&
+    core.restoreText("pagada con tarjeta *" + fakeCard.replace(/\D/g, "").slice(-4), vault).includes("1111")
+);
 assert("rechaza tarjeta invalida", !core.redactText("4540123456789012", {}).types.includes("TARJETA"));
 assert("luhn demo visa", core.luhnOk("4111111111111111"));
 

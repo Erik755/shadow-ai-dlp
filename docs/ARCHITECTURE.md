@@ -10,7 +10,7 @@ platforms.js + redact-core.js + injected.js (MAIN)
                                       │
                               JSON o form redactado
                                       │
-                         tokens {{DLP_TIPO_ID}}
+                         tokens sintéticos (Ana López, user99@test.com)
                                       │
                      MutationObserver restaura en el DOM
 ```
@@ -19,5 +19,6 @@ platforms.js + redact-core.js + injected.js (MAIN)
 - **ISOLATED world** es el único que habla con `chrome.runtime`.
 - La bóveda vive en `sessionStorage` del origen del chat. No se sube a `chrome.storage`.
 - El service worker solo guarda contadores y el toggle.
+- Sale un dato falso del mismo formato. El original no viaja. Al volver, se reescribe en pantalla.
 
 Principio: si el motor DLP lanza, la petición original sigue. No hay denegación de servicio del chat.
