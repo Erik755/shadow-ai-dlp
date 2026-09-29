@@ -73,8 +73,8 @@
     if (!url) return false;
     try {
       const u = new URL(url, (typeof location !== "undefined" && location.href) || "https://localhost/");
-      if (SKIP_PATH.test(u.pathname + u.search)) return false;
-      if (CHAT_PATH.test(u.pathname + u.search)) return true;
+      if (SKIP_PATH.test(u.pathname)) return false;
+      if (CHAT_PATH.test(u.pathname)) return true;
       if (parsedBody && looksLikeChatPayload(parsedBody)) return true;
       return false;
     } catch {

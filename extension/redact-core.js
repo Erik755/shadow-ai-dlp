@@ -142,8 +142,19 @@
       return { text, hits: 0, types: [] };
     }
     let out = text;
-    let hits = 0;
-    const types = [];
+    let encodedHits = 0;
+    // Encoded e-mail addresses in links and URL parameters still contain PII.
+    out = out.replace(/[A-Za-z0-9._%+-]+%40[A-Za-z0-9.-]+(?:\.|%2E)[A-Za-z]{2,}/gi, (value) => {
+      let decoded;
+      try { decoded = decodeURIComponent(value); } catch { return value; }
+      RULES[0].regex.lastIndex = 0;
+      if (!RULES[0].regex.test(decoded)) return value;
+      RULES[0].regex.lastIndex = 0;
+      encodedHits += 1;
+      return encodeURIComponent(tokenize(vault, decoded, "EMAIL"));
+    });
+    let hits = encodedHits;
+    const types = hits ? ["EMAIL"] : [];
     for (const rule of RULES) {
       rule.regex.lastIndex = 0;
       out = out.replace(rule.regex, (...args) => {
@@ -261,7 +272,10 @@
 
   function redactAnyBody(raw, vault) {
     if (typeof raw !== "string" || raw.length < 4) return null;
-    return tryRedactJsonString(raw, vault) || tryRedactFormBody(raw, vault);
+    const structured = tryRedactJsonString(raw, vault) || tryRedactFormBody(raw, vault);
+    if (structured) return structured;
+    const plain = redactText(raw, vault);
+    return plain.hits ? { body: plain.text, hits: plain.hits, types: plain.types } : null;
   }
 
   root.ShadowDLPCore = {

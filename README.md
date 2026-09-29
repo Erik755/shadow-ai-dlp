@@ -1,6 +1,6 @@
 # Shadow AI DLP
 
-Extensión de Chrome (Manifest V3) que intercepta el texto **antes** de que una IA web lo reciba, sustituye PII por tokens y lo vuelve a mostrar solo en tu pantalla.
+Extensión de Chrome (Manifest V3) que intercepta el texto **antes** de que una IA web lo reciba, sustituye algunos datos personales por tokens en ciertos cuerpos de petición y restaura los tokens visibles en la página. No garantiza que el sitio no reciba los datos originales por otras rutas.
 
 Repo de trabajo: [github.com/Erik755/shadow-ai-dlp](https://github.com/Erik755/shadow-ai-dlp)
 
@@ -33,12 +33,13 @@ y mi RFC es XAXX010101000.
 ¿Qué datos tienes de mí?
 ```
 
-En Network el body debe llevar `{{DLP_EMAIL_...}}`. En pantalla, el valor original con recuadro verde.
+En Network, revisa el cuerpo de la petición que transporta el mensaje: debe llevar `{{DLP_EMAIL_...}}`. Comprueba también que ninguna otra petición lleve el valor original. La restauración visual usa un recuadro verde.
 
 ## Desarrollo
 
 ```bash
 node scripts/test-engine.mjs
+node scripts/test-transport.mjs
 ```
 
 Arquitectura: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).  
@@ -49,7 +50,9 @@ Cómo sumar una IA: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 - Solo chats **web**. No cubre apps de escritorio, IDEs ni tu backend llamando a una API.
 - Gemini a veces usa service workers o protobuf; esos caminos pueden escapar.
 - Si el modelo reescribe el token, no se puede desenmascarar.
-- Cualquier extensión con host permissions sobre un chat **puede** leer ese chat. Revisa el código antes de instalarlo.
+- El sitio puede leer el texto antes del envío desde el editor y observar o modificar el código ejecutado en la página. No introduzcas secretos reales confiando únicamente en esta extensión.
+- No cubre todas las rutas de red: cuerpos binarios, parámetros de URL, datos codificados, `fetch` con ciertos tipos de cuerpo, service workers e iframes pueden escapar.
+- Cualquier extensión con permisos sobre un chat **puede** leer ese chat. Revisa el código antes de instalarlo.
 
 ## Licencia
 

@@ -10,34 +10,16 @@
   const platforms = window.ShadowDLPPlatforms;
   if (!core || !platforms) return;
 
-  const VAULT_KEY = "__shadow_dlp_vault_v2";
   const MARK_ATTR = "data-shadow-dlp";
-  const vault = loadVault();
+  const vault = Object.create(null);
   const platform = platforms.matchPlatform(
     typeof location !== "undefined" ? location.hostname : ""
   );
 
   let enabled = true;
 
-  function loadVault() {
-    try {
-      return JSON.parse(sessionStorage.getItem(VAULT_KEY) || "{}");
-    } catch {
-      return {};
-    }
-  }
-
-  function persistVault() {
-    try {
-      sessionStorage.setItem(VAULT_KEY, JSON.stringify(vault));
-    } catch {
-      /* ignore */
-    }
-  }
-
   function notify(hits, types) {
     if (!hits) return;
-    persistVault();
     window.postMessage(
       {
         source: "shadow-ai-dlp",
@@ -77,34 +59,19 @@
   const originalFetch = window.fetch;
   window.fetch = async function (input, init) {
     try {
-      const url =
-        typeof input === "string"
-          ? input
-          : input && typeof input === "object" && "url" in input
-            ? input.url
-            : "";
-      const method = (
-        (init && init.method) ||
-        (input && input.method) ||
-        "GET"
-      ).toUpperCase();
-
-      if (init && typeof init.body === "string") {
-        const redacted = redactAndNotify(init.body, method, url);
-        if (redacted) init = Object.assign({}, init, { body: redacted.body });
-      } else if (
-        !init &&
-        input &&
-        typeof input === "object" &&
-        typeof input.clone === "function"
-      ) {
-        const cloned = input.clone();
-        const raw = await cloned.text();
+      const url = typeof input === "string" || input instanceof URL ? String(input) : input?.url || "";
+      const method = String(init?.method || input?.method || "GET").toUpperCase();
+      if (typeof init?.body === "string" || init?.body instanceof URLSearchParams) {
+        const isParams = init.body instanceof URLSearchParams;
+        const redacted = redactAndNotify(String(init.body), method, url);
+        if (redacted) init = { ...init, body: isParams ? new URLSearchParams(redacted.body) : redacted.body };
+      } else if (input instanceof Request && init?.body == null) {
+        const raw = await input.clone().text();
         const redacted = redactAndNotify(raw, method, url);
         if (redacted) input = new Request(input, { body: redacted.body });
       }
     } catch {
-      /* nunca bloquear el envío si el DLP falla */
+      /* Redacción no disponible para este transporte. */
     }
     return originalFetch.call(this, input, init);
   };
@@ -118,9 +85,10 @@
   XMLHttpRequest.prototype.send = function (body) {
     try {
       const meta = this.__shadowDlp || {};
-      if (typeof body === "string") {
-        const redacted = redactAndNotify(body, meta.method, String(meta.url || ""));
-        if (redacted) body = redacted.body;
+      if (typeof body === "string" || body instanceof URLSearchParams) {
+        const isParams = body instanceof URLSearchParams;
+        const redacted = redactAndNotify(String(body), meta.method, String(meta.url || ""));
+        if (redacted) body = isParams ? new URLSearchParams(redacted.body) : redacted.body;
       }
     } catch {
       /* ignore */

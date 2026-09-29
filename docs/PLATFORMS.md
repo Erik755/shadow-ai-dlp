@@ -1,26 +1,26 @@
 # Cobertura por plataforma
 
-La extensión se inyecta en el origen del chat y engancha `fetch`, `XMLHttpRequest`, `WebSocket.send` y `sendBeacon`. Redacta JSON y forms (`f.req` de Gemini) que parecen un prompt.
+La extensión se inyecta en el origen del chat y engancha `fetch`, `XMLHttpRequest`, `WebSocket.send` y `sendBeacon`. Redacta JSON, texto y forms (`f.req` de Gemini) que parecen un prompt. Estas rutas no se han verificado con sesiones reales de cada plataforma.
 
 | Plataforma | Hosts | Transporte típico | Estado |
 |---|---|---|---|
-| ChatGPT | chatgpt.com, chat.openai.com | fetch JSON + SSE | Cubierto |
-| Claude | claude.ai | fetch JSON | Cubierto |
+| ChatGPT | chatgpt.com, chat.openai.com | fetch JSON + SSE | Intercepción implementada; sin prueba en sitio |
+| Claude | claude.ai | fetch JSON | Intercepción implementada; sin prueba en sitio |
 | Gemini / Bard / AI Studio / NotebookLM | gemini.google.com, bard.google.com, aistudio.google.com, notebooklm.google.com | fetch + form `f.req` | Parcial (protobuf / SW pueden escapar) |
-| Grok | grok.com, grok.x.ai, x.com/i/grok | fetch JSON | Cubierto en web app |
-| Copilot | copilot.microsoft.com, bing.com/chat | WebSocket + fetch | Parcial |
-| Perplexity | perplexity.ai | fetch JSON / SSE | Cubierto |
-| DeepSeek | chat.deepseek.com | fetch JSON | Cubierto |
-| Meta AI | meta.ai | fetch JSON | Parcial |
-| Mistral | chat.mistral.ai | fetch JSON | Cubierto |
-| HuggingChat | huggingface.co/chat | fetch JSON | Cubierto |
-| Poe | poe.com | fetch / WS | Parcial |
-| You.com | you.com | fetch JSON | Parcial |
-| Qwen | chat.qwen.ai | fetch JSON | Cubierto |
-| Kimi | kimi.com | fetch JSON | Parcial |
-| Character.AI | character.ai | fetch JSON | Parcial |
-| Pi | pi.ai | fetch JSON | Parcial |
-| OpenRouter playground | openrouter.ai | fetch JSON | Cubierto |
+| Grok | grok.com, grok.x.ai, x.com/i/grok | fetch JSON | Intercepción implementada; sin prueba en sitio |
+| Copilot | copilot.microsoft.com, bing.com/chat | WebSocket + fetch | Parcial; sin prueba en sitio |
+| Perplexity | perplexity.ai | fetch JSON / SSE | Intercepción implementada; sin prueba en sitio |
+| DeepSeek | chat.deepseek.com | fetch JSON | Intercepción implementada; sin prueba en sitio |
+| Meta AI | meta.ai | fetch JSON | Parcial; sin prueba en sitio |
+| Mistral | chat.mistral.ai | fetch JSON | Intercepción implementada; sin prueba en sitio |
+| HuggingChat | huggingface.co/chat | fetch JSON | Intercepción implementada; sin prueba en sitio |
+| Poe | poe.com | fetch / WS | Parcial; sin prueba en sitio |
+| You.com | you.com | fetch JSON | Parcial; sin prueba en sitio |
+| Qwen | chat.qwen.ai | fetch JSON | Intercepción implementada; sin prueba en sitio |
+| Kimi | kimi.com | fetch JSON | Parcial; sin prueba en sitio |
+| Character.AI | character.ai | fetch JSON | Parcial; sin prueba en sitio |
+| Pi | pi.ai | fetch JSON | Parcial; sin prueba en sitio |
+| OpenRouter playground | openrouter.ai | fetch JSON | Intercepción implementada; sin prueba en sitio |
 
 No cubre (aún):
 
