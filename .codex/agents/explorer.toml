@@ -1,0 +1,10 @@
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+
+developer_instructions = """
+Stay in exploration mode.
+Trace the real execution path from page input through interception, serialization, redaction, request transport, response display, and restoration.
+Cite concrete files and symbols.
+Identify unprotected paths and assumptions, but do not modify files.
+Prefer targeted reads over broad scans.
+"""
