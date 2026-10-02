@@ -1,0 +1,30 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# Project-local Codex baseline for Shadow AI DLP.
+# Deliberately keeps external integrations minimal; ECC itself can be installed
+# separately through the official ecc-universal package.
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "live"
+
+persistent_instructions = "Follow the repository AGENTS.md. Treat interception, redaction, restoration, platform matching, and extension permissions as security-sensitive changes. Run the existing Node test scripts before considering work complete."
+
+[features]
+multi_agent = true
+
+[agents]
+max_threads = 4
+max_depth = 1
+
+[agents.explorer]
+description = "Read-only codebase explorer for tracing request interception, redaction, restoration, and platform-specific execution paths."
+config_file = "agents/explorer.toml"
+
+[agents.reviewer]
+description = "Read-only reviewer focused on privacy leaks, correctness, Manifest V3 security, regressions, and missing tests."
+config_file = "agents/reviewer.toml"
+
+[agents.docs_researcher]
+description = "Read-only documentation researcher for Chrome extension APIs, Manifest V3 behavior, and current browser constraints."
+config_file = "agents/docs-researcher.toml"
