@@ -41,11 +41,35 @@
     });
   }
 
+  function looksLikeRandomKey(body) {
+    if (body.length < 20 || !/[a-z]/.test(body) || !/[A-Z]/.test(body) || !/\d/.test(body)) return false;
+
+    let longestRun = 0;
+    for (const segment of body.split(/[-_]/)) longestRun = Math.max(longestRun, segment.length);
+    if (longestRun < 12) return false;
+
+    const counts = new Map();
+    for (const char of body) counts.set(char, (counts.get(char) || 0) + 1);
+    let entropy = 0;
+    for (const count of counts.values()) {
+      const probability = count / body.length;
+      entropy -= probability * Math.log2(probability);
+    }
+    // Requiring 3.5 bits per character filters low-variety placeholders.
+    return entropy >= 3.5;
+  }
+
   function looksLikeApiKey(s) {
+    if (/^sk-ant-[A-Za-z0-9_-]{16,}$/.test(s)) {
+      return looksLikeRandomKey(s.replace(/^sk-ant-/, ""));
+    }
+    if (/^sk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{16,}$/.test(s)) {
+      return looksLikeRandomKey(s.replace(/^sk-(?:proj-|svcacct-)?/, ""));
+    }
+    if (/^xai-[A-Za-z0-9_-]{16,}$/.test(s)) {
+      return looksLikeRandomKey(s.replace(/^xai-/, ""));
+    }
     return (
-      /^sk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{16,}$/.test(s) ||
-      /^sk-ant-[A-Za-z0-9_-]{16,}$/.test(s) ||
-      /^xai-[A-Za-z0-9_-]{16,}$/.test(s) ||
       /^ghp_[A-Za-z0-9]{20,}$/.test(s) ||
       /^github_pat_[A-Za-z0-9_]{20,}$/.test(s) ||
       /^xox[baprs]-[A-Za-z0-9-]{10,}$/.test(s) ||

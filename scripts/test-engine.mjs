@@ -24,7 +24,7 @@ function assert(name, cond) {
 
 const vault = {};
 const sample =
-  "Hola, soy Juan Perez, mi tarjeta es 4111111111111111, mi correo es juan@perez.com, tel +52 442 123 4567 y RFC XAXX010101000. sk-ant-abcdefghijklmnopqrstuvwxyz";
+  "Hola, soy Juan Perez, mi tarjeta es 4111111111111111, mi correo es juan@perez.com, tel +52 442 123 4567 y RFC XAXX010101000. sk-ant-api03-Zq8Lm2Xv9Rt4Kp7Wn1Bc6Hy3Jd5Gf0Qs";
 const redacted = core.redactText(sample, vault);
 assert("detecta email", redacted.types.includes("EMAIL"));
 assert("detecta tarjeta Luhn", redacted.types.includes("TARJETA"));
@@ -41,6 +41,22 @@ const fakeCard = Object.keys(vault).find((k) => String(vault[k]).includes("41111
 assert("bóveda conserva tarjeta", fakeCard && redacted.text.includes(fakeCard));
 assert("rechaza tarjeta invalida", !core.redactText("4540123456789012", {}).types.includes("TARJETA"));
 assert("luhn demo visa", core.luhnOk("4111111111111111"));
+
+for (const [name, key] of [
+  ["OpenAI key", "sk-proj-Hk3Pq9Zr7Tm2Xw5Lv8Nb1Cy4Jg6Df0Sa"],
+  ["Anthropic key", "sk-ant-api03-Zq8Lm2Xv9Rt4Kp7Wn1Bc6Hy3Jd5Gf0Qs"],
+  ["xAI key", "xai-Qp7Lk2Xv9Rt4Wn1Bc6Hy3Jd5Gf0Mz8As"],
+]) {
+  const result = core.redactText(key, {});
+  assert(`detects realistic fake ${name}`, result.types.includes("APIKEY") && !result.text.includes(key));
+}
+for (const placeholder of [
+  "sk-this-is-not-a-real-key-example",
+  "sk-ant-this-is-not-a-real-key-example",
+  "xai-placeholder-goes-here",
+]) {
+  assert(`ignores placeholder ${placeholder}`, !core.redactText(placeholder, {}).types.includes("APIKEY"));
+}
 
 const chatBody = JSON.stringify({
   messages: [{ role: "user", content: { parts: ["escribe a ana@empresa.com"] } }],
